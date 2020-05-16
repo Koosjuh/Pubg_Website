@@ -1,0 +1,48 @@
+from pubg_python import PUBG, Shard
+import copy
+from enum import Enum
+import csv
+import requests
+import json
+import secrets
+import time
+import pymongo
+import datetime
+import dns
+from datetime import datetime
+
+client = pymongo.MongoClient("mongodb+srv://" + secrets.mongo_db_url + "p0oey.azure.mongodb.net/test?retryWrites=true&w=majority")
+pubgstats = client["pubgstats"]
+
+pubg_api = PUBG(secrets.pubg_key, Shard.PSN)
+
+def timestamp():
+    now = datetime.now().time()
+    now2 = datetime.today().strftime('%Y-%m-%d')
+
+    current_timestamp = str(now2) + str(now)
+    return current_timestamp
+
+
+username = input("Please specify a username: ")
+username
+players = pubg_api.players(username)
+
+psnplayers_col = client.pubgstats[username]
+playermatches_col = client.pubgstats[username+"_Matches"]
+
+for player in players:
+    player_name = player.name
+    player_id = player.id
+    match_count = 0
+    match_time = 0
+    vikendi_count = 0
+    erangel_count = 0
+    miramar_count = 0
+    sanhok_count = 0
+    karakin_count = 0
+    playerlistitem = []
+    p_gamemode_solo = 0
+    p_gamemode_duo = 0
+    p_gamemode_squad = 0
+    for match in player.matches:
